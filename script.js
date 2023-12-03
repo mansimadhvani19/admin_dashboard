@@ -28,8 +28,8 @@ function renderTable() {
             <td contenteditable="true">${user.email}</td>
             <td contenteditable="true">${user.role}</td>
             <td>
-                <button class="edit" onclick="editUser(${user.id})"><img src="pen-to-square-regular.svg" alt="Edit" style="width: 20px; height: 20px;"></button>
-                <button class="delete" onclick="deleteUser(${user.id})"><img src="trash-solid.svg" alt="Delete" style="width: 20px; height: 20px;"></button>
+                <button class="edit" id="editUser" onclick="editUser(${user.id})"><img src="pen-to-square-regular.svg" alt="Edit" style="width: 20px; height: 20px;"></button>
+                <button class="delete" id="deleteUser" onclick="deleteUser(${user.id})"><img src="trash-solid.svg" alt="Delete" style="width: 20px; height: 20px;"></button>
             </td>
         `;
         tableBody.appendChild(row);
@@ -59,7 +59,7 @@ function updateDeleteSelectedButtonState() {
 }
 
 function deleteSelected() {
-    const selectedRows = document.querySelectorAll('.selected-row');
+    const selectedRows = document.querySelectorAll('deleteSelectedButton');
     selectedRows.forEach(row => {
         const userId = parseInt(row.querySelector('input[type="checkbox"]').dataset.id);
         deleteUser(userId);
@@ -193,5 +193,29 @@ function deleteUser(userId) {
         renderTable();
     }
 }
+
+function bulkDelete() {
+    const selectedRows = document.querySelectorAll('deleteSelectedButton');
+
+    if (selectedRows.length === 0) {
+        alert("Please select at least one user to delete.");
+        return;
+    }
+
+    const confirmDelete = confirm("Are you sure you want to delete the selected users?");
+
+    if (confirmDelete) {
+        selectedRows.forEach(row => {
+            const userId = parseInt(row.querySelector('input[type="checkbox"]').dataset.id);
+            deleteUser(userId);
+        });
+
+        // Clear the selected rows and update the UI
+        const checkboxes = document.querySelectorAll('tbody input[type="checkbox"]');
+        checkboxes.forEach(checkbox => checkbox.checked = false);
+        updateDeleteSelectedButtonState();
+    }
+}
+
 // Initial data fetch and rendering
 fetchData();
